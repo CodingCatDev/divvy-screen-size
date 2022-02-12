@@ -10,6 +10,7 @@ import { text } from "@cloudinary/url-gen/qualifiers/source";
 import { Position } from "@cloudinary/url-gen/qualifiers/position";
 import { compass } from "@cloudinary/url-gen/qualifiers/gravity";
 import { TextStyle } from "@cloudinary/url-gen/qualifiers/textStyle";
+import { northWest } from "@cloudinary/url-gen/qualifiers/compass";
 
 // Create and configure your Cloudinary instance.
 const cld = new Cloudinary({
@@ -88,7 +89,7 @@ export const getCloudinaryImage = ({
               fill().width(reducedWidth).height(reducedMenuBarHeight)
             )
           )
-      ).position(new Position().gravity(compass("north_west" as any)))
+      ).position(new Position().gravity(compass(northWest())))
     )
     //Margin left
     .overlay(
@@ -104,7 +105,7 @@ export const getCloudinaryImage = ({
           )
       ).position(
         new Position()
-          .gravity(compass("north_west" as any))
+          .gravity(compass(northWest()))
           .offsetY(reducedMenuBarHeight)
       )
     )
@@ -122,7 +123,7 @@ export const getCloudinaryImage = ({
           )
       ).position(
         new Position()
-          .gravity(compass("north_west" as any))
+          .gravity(compass(northWest()))
           .offsetY(reducedMenuBarHeight)
           .offsetX(
             Math.round(reducedScreenMargin / 2 + columns * reducedBoxWidth)
@@ -155,7 +156,7 @@ export const getCloudinaryImage = ({
             )
         ).position(
           new Position()
-            .gravity(compass("north_west" as any))
+            .gravity(compass(northWest()))
             .offsetY(offsetY)
             .offsetX(offsetX)
         )
