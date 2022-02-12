@@ -26,6 +26,15 @@ const cld = new Cloudinary({
   },
 });
 
+function getRandomColor() {
+  var letters = "0123456789ABCDEF";
+  var color = "#";
+  for (var i = 0; i < 6; i++) {
+    color += letters[Math.floor(Math.random() * 16)];
+  }
+  return color;
+}
+
 const CloudinaryImage = ({
   menuBarHeight,
   width,
@@ -48,11 +57,7 @@ const CloudinaryImage = ({
   columns: number;
 }) => {
   // Use the image with public ID, 'front_face'.
-  const myImage =
-    width > 3840
-      ? cld.image("main-codingcatdev-photo/8k")
-      : cld.image("main-codingcatdev-photo/4k");
-
+  const myImage = cld.image("main-codingcatdev-photo/16x9");
   const screenMargin = getScreenMargin();
   const screenHeight = getScreenHeight();
   const box = getBoxSize();
@@ -62,6 +67,7 @@ const CloudinaryImage = ({
   // Apply the transformation.
   myImage
     // Crop the image.
+    .resize(fill().width(width).height(height))
     .overlay(
       source(
         text("Menu Bar", new TextStyle("arial", 3))
@@ -123,7 +129,7 @@ const CloudinaryImage = ({
         source(
           text("Box 1", new TextStyle("arial", 3))
             .textColor("white")
-            .backgroundColor(`#${randomColor}`)
+            .backgroundColor(getRandomColor())
             .transformation(
               new Transformation().resize(
                 fill().width(boxWidth).height(boxHeight)
@@ -141,17 +147,11 @@ const CloudinaryImage = ({
 
   // Render the transformed image in a React component.
   return (
-    <a
-      href={myImage
-        .resize(fill().width(width).height(height))
-        .format("png")
-        .toURL()}
-      target="_blank"
-    >
+    <a href={myImage.format("png").toURL()} target="_blank">
       {height && width && menuBarHeight && (
         <AdvancedImage
           cldImg={myImage}
-          plugins={[placeholder({ mode: "pixelate" })]}
+          // plugins={[placeholder({ mode: "pixelate" })]}
         />
       )}
     </a>
