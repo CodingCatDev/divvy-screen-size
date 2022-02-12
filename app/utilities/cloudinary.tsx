@@ -1,22 +1,14 @@
-import React from "react";
-import { AdvancedImage, placeholder } from "@cloudinary/react";
 import { Cloudinary } from "@cloudinary/url-gen";
 import { Transformation } from "@cloudinary/url-gen";
 
 // Import required actions.
-import { thumbnail, scale, fill } from "@cloudinary/url-gen/actions/resize";
-import { byRadius } from "@cloudinary/url-gen/actions/roundCorners";
-import { sepia } from "@cloudinary/url-gen/actions/effect";
+import { fill } from "@cloudinary/url-gen/actions/resize";
 import { source } from "@cloudinary/url-gen/actions/overlay";
-import { opacity, brightness } from "@cloudinary/url-gen/actions/adjust";
-import { byAngle } from "@cloudinary/url-gen/actions/rotate";
 
 // Import required qualifiers.
-import { image, text } from "@cloudinary/url-gen/qualifiers/source";
+import { text } from "@cloudinary/url-gen/qualifiers/source";
 import { Position } from "@cloudinary/url-gen/qualifiers/position";
 import { compass } from "@cloudinary/url-gen/qualifiers/gravity";
-import { focusOn } from "@cloudinary/url-gen/qualifiers/gravity";
-import { FocusOn } from "@cloudinary/url-gen/qualifiers/focusOn";
 import { TextStyle } from "@cloudinary/url-gen/qualifiers/textStyle";
 
 // Create and configure your Cloudinary instance.
@@ -26,35 +18,26 @@ const cld = new Cloudinary({
   },
 });
 
-function getRandomColor() {
-  var letters = "0123456789ABCDEF";
-  var color = "#";
-  for (var i = 0; i < 6; i++) {
-    color += letters[Math.floor(Math.random() * 16)];
-  }
-  return color;
-}
-
-const CloudinaryImage = ({
+export const getCloudinaryImage = ({
   menuBarHeight,
   width,
   height,
-  getScreenWidth,
   getScreenHeight,
   getScreenMargin,
   getBoxSize,
   rows,
   columns,
+  shrink,
 }: {
   menuBarHeight: number;
   width: number;
   height: number;
-  getScreenWidth: () => number;
   getScreenHeight: () => number;
   getScreenMargin: () => number;
   getBoxSize: () => { width: number; height: number };
   rows: number;
   columns: number;
+  shrink?: number;
 }) => {
   // Use the image with public ID, 'front_face'.
   const myImage = cld.image("main-codingcatdev-photo/16x9");
@@ -64,75 +47,110 @@ const CloudinaryImage = ({
   const boxWidth = Math.round(box.width);
   const boxHeight = Math.round(box.height);
 
+  let reducedMenuBarHeight;
+  let reducedWidth;
+  let reducedHeight;
+  let reducedScreenMargin;
+  let reducedScreenHeight;
+  let reducedBoxWidth;
+  let reducedBoxHeight;
+
+  if (shrink) {
+    reducedMenuBarHeight = Math.round(menuBarHeight / shrink);
+    reducedWidth = Math.round(width / shrink);
+    reducedHeight = Math.round(height / shrink);
+    reducedScreenMargin = Math.round(screenMargin / shrink);
+    reducedScreenHeight = Math.round(screenHeight / shrink);
+    reducedBoxWidth = Math.round(boxWidth / shrink);
+    reducedBoxHeight = Math.round(boxHeight / shrink);
+  } else {
+    reducedMenuBarHeight = menuBarHeight;
+    reducedWidth = width;
+    reducedHeight = height;
+    reducedScreenMargin = screenMargin;
+    reducedScreenHeight = screenHeight;
+    reducedBoxWidth = boxWidth;
+    reducedBoxHeight = boxHeight;
+  }
+
   // Apply the transformation.
   myImage
     // Crop the image.
-    .resize(fill().width(width).height(height))
+    .resize(fill().width(reducedWidth).height(reducedHeight))
+    //Menu Bar
     .overlay(
       source(
-        text("Menu Bar", new TextStyle("arial", 3))
-          .textColor("#1B824D")
-          .backgroundColor("#1B824D")
+        text("a", new TextStyle("arial", 1))
+          .textColor("#321")
+          .backgroundColor("#321")
           .transformation(
             new Transformation().resize(
-              fill().width(width).height(menuBarHeight)
+              fill().width(reducedWidth).height(reducedMenuBarHeight)
             )
           )
       ).position(new Position().gravity(compass("north_west" as any)))
     )
+    //Margin left
     .overlay(
       source(
-        text("Margin left", new TextStyle("arial", 3))
-          .textColor("white")
+        text("a", new TextStyle("arial", 1))
           .backgroundColor("red")
           .transformation(
             new Transformation().resize(
               fill()
-                .width(Math.round(screenMargin / 2))
-                .height(Math.round(screenHeight))
+                .width(Math.round(reducedScreenMargin / 2))
+                .height(Math.round(reducedScreenHeight))
             )
           )
       ).position(
         new Position()
           .gravity(compass("north_west" as any))
-          .offsetY(menuBarHeight)
+          .offsetY(reducedMenuBarHeight)
       )
     )
+    //Margin right
     .overlay(
       source(
-        text("Margin right", new TextStyle("arial", 3))
-          .textColor("red")
+        text("a", new TextStyle("arial", 1))
           .backgroundColor("red")
           .transformation(
             new Transformation().resize(
               fill()
-                .width(Math.round(screenMargin / 2))
-                .height(Math.round(screenHeight))
+                .width(Math.round(reducedScreenMargin / 2))
+                .height(Math.round(reducedScreenHeight))
             )
           )
       ).position(
         new Position()
           .gravity(compass("north_west" as any))
-          .offsetY(menuBarHeight)
-          .offsetX(Math.round(screenMargin / 2 + columns * boxWidth))
+          .offsetY(reducedMenuBarHeight)
+          .offsetX(
+            Math.round(reducedScreenMargin / 2 + columns * reducedBoxWidth)
+          )
       )
     );
 
+  /*
+   * TODO: Can't currently go above about 6x6.
+   * Possibly could create 2 rows and make those repeat?
+   */
   for (let row = 0; row < rows; row++) {
     for (let column = 0; column < columns; column++) {
-      var randomColor = Math.floor(Math.random() * 16777215).toString(16);
-      const offsetY = Math.round(menuBarHeight + Math.round(boxHeight * row));
+      const rowColor = (row + 1 + column + 1) % 2 == 0 ? "#666" : "#333";
+
+      const offsetY = Math.round(
+        reducedMenuBarHeight + Math.round(reducedBoxHeight * row)
+      );
       const offsetX = Math.round(
-        screenMargin / 2 + Math.round(boxWidth * column)
+        reducedScreenMargin / 2 + Math.round(reducedBoxWidth * column)
       );
       myImage.overlay(
         source(
-          text("Box 1", new TextStyle("arial", 3))
-            .textColor("white")
-            .backgroundColor(getRandomColor())
+          text("a", new TextStyle("arial", 1))
+            .backgroundColor(rowColor)
             .transformation(
               new Transformation().resize(
-                fill().width(boxWidth).height(boxHeight)
+                fill().width(reducedBoxWidth).height(reducedBoxHeight)
               )
             )
         ).position(
@@ -144,18 +162,5 @@ const CloudinaryImage = ({
       );
     }
   }
-
-  // Render the transformed image in a React component.
-  return (
-    <a href={myImage.format("png").toURL()} target="_blank">
-      {height && width && menuBarHeight && (
-        <AdvancedImage
-          cldImg={myImage}
-          // plugins={[placeholder({ mode: "pixelate" })]}
-        />
-      )}
-    </a>
-  );
+  return myImage;
 };
-
-export default CloudinaryImage;

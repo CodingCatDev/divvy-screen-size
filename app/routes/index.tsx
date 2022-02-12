@@ -1,7 +1,8 @@
 import { useState } from "react";
 import DropDown from "~/components/DropDown";
 import Data from "~/components/Data";
-import CloudinaryImage from "~/components/CloudinaryImage";
+import { AdvancedImage, placeholder } from "@cloudinary/react";
+import { getCloudinaryImage } from "~/utilities/cloudinary";
 
 export default function Index() {
   const [menuBarHeight, setMenuBarHeight] = useState(24);
@@ -29,6 +30,20 @@ export default function Index() {
       width: (width - getScreenMargin()) / columns,
       height: getScreenHeight() / rows,
     };
+  };
+
+  const generateDownload = () => {
+    const url = getCloudinaryImage({
+      menuBarHeight,
+      width,
+      height,
+      getScreenHeight,
+      getScreenMargin,
+      getBoxSize,
+      rows,
+      columns,
+    }).toURL();
+    window.open(url, "__blank");
   };
 
   return (
@@ -123,7 +138,7 @@ export default function Index() {
                 <button
                   className="px-4 py-2 font-bold text-white bg-blue-500 rounded hover:bg-blue-700 focus:outline-none focus:shadow-outline"
                   type="button"
-                  // onClick={() => generateCodingCatCoverURL()}
+                  onClick={() => generateDownload()}
                 >
                   Get Divvy Layout
                 </button>
@@ -154,17 +169,25 @@ export default function Index() {
             </form>
             <div className="flex flex-col px-8 pt-6 pb-8 mb-4 bg-blue-300 rounded shadow-md">
               <h2 className="text-2xl text-white">Preview Image</h2>
-              <CloudinaryImage
-                menuBarHeight={menuBarHeight}
-                width={width}
-                height={height}
-                getScreenWidth={getScreenWidth}
-                getScreenHeight={getScreenHeight}
-                getScreenMargin={getScreenMargin}
-                getBoxSize={getBoxSize}
-                columns={columns}
-                rows={rows}
-              />
+              <div
+                className="cursor-pointer "
+                onClick={() => generateDownload()}
+              >
+                <AdvancedImage
+                  cldImg={getCloudinaryImage({
+                    menuBarHeight,
+                    width,
+                    height,
+                    getScreenHeight,
+                    getScreenMargin,
+                    getBoxSize,
+                    rows,
+                    columns,
+                    shrink: 10,
+                  })}
+                  plugins={[placeholder({ mode: "blur" })]}
+                />
+              </div>
             </div>
           </div>
         </div>
