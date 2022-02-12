@@ -146,16 +146,28 @@ export default function Index() {
                 <a
                   href="https://github.com/CodingCatDev/divvy-screen-size.git"
                   className="text-gray-700 underline"
+                  target="_blank"
                 >
                   GitHub Link
                 </a>
               </div>
             </form>
+            <div className="flex flex-col px-8 pt-6 pb-8 mb-4 bg-blue-300 rounded shadow-md">
+              <h2 className="text-2xl text-white">Preview Image</h2>
+              <CloudinaryImage
+                menuBarHeight={menuBarHeight}
+                width={width}
+                height={height}
+                getScreenWidth={getScreenWidth}
+                getScreenHeight={getScreenHeight}
+                getScreenMargin={getScreenMargin}
+                getBoxSize={getBoxSize}
+                columns={columns}
+                rows={rows}
+              />
+            </div>
           </div>
         </div>
-      </section>
-      <section>
-        <CloudinaryImage />
       </section>
     </>
   );
