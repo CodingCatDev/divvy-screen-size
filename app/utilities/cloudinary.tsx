@@ -2,15 +2,16 @@ import { Cloudinary } from "@cloudinary/url-gen";
 import { Transformation } from "@cloudinary/url-gen";
 
 // Import required actions.
-import { fill } from "@cloudinary/url-gen/actions/resize";
+import { fill, thumbnail } from "@cloudinary/url-gen/actions/resize";
 import { source } from "@cloudinary/url-gen/actions/overlay";
 
 // Import required qualifiers.
-import { text } from "@cloudinary/url-gen/qualifiers/source";
+import { image } from "@cloudinary/url-gen/qualifiers/source";
 import { Position } from "@cloudinary/url-gen/qualifiers/position";
 import { compass } from "@cloudinary/url-gen/qualifiers/gravity";
-import { TextStyle } from "@cloudinary/url-gen/qualifiers/textStyle";
-import { northWest } from "@cloudinary/url-gen/qualifiers/compass";
+import { northEast, northWest } from "@cloudinary/url-gen/qualifiers/compass";
+import { colorize } from "@cloudinary/url-gen/actions/effect";
+import { ColorizeEffectAction } from "@cloudinary/url-gen/actions/effect/Colorize";
 
 // Create and configure your Cloudinary instance.
 const cld = new Cloudinary({
@@ -77,57 +78,54 @@ export const getCloudinaryImage = ({
   // Apply the transformation.
   myImage
     // Crop the image.
-    .resize(fill().width(reducedWidth).height(reducedHeight))
+    .resize(thumbnail().width(reducedWidth).height(reducedHeight))
     //Menu Bar
     .overlay(
       source(
-        text("a", new TextStyle("arial", 1))
-          .textColor("#321")
-          .backgroundColor("#321")
-          .transformation(
-            new Transformation().resize(
-              fill().width(reducedWidth).height(reducedMenuBarHeight)
+        image(`1`).transformation(
+          new Transformation()
+            .resize(
+              fill()
+                .width(Math.round(reducedWidth))
+                .height(Math.round(menuBarHeight))
             )
-          )
+            .effect(new ColorizeEffectAction().color("#391").level("colorize"))
+        )
       ).position(new Position().gravity(compass(northWest())))
     )
     //Margin left
     .overlay(
       source(
-        text("a", new TextStyle("arial", 1))
-          .backgroundColor("red")
-          .transformation(
-            new Transformation().resize(
+        image(`1`).transformation(
+          new Transformation()
+            .resize(
               fill()
                 .width(Math.round(reducedScreenMargin / 2))
                 .height(Math.round(reducedScreenHeight))
             )
-          )
+            .effect(new ColorizeEffectAction().color("red").level("colorize"))
+        )
       ).position(
         new Position()
           .gravity(compass(northWest()))
           .offsetY(reducedMenuBarHeight)
       )
     )
-    //Margin right
     .overlay(
       source(
-        text("a", new TextStyle("arial", 1))
-          .backgroundColor("red")
-          .transformation(
-            new Transformation().resize(
+        image(`1`).transformation(
+          new Transformation()
+            .resize(
               fill()
                 .width(Math.round(reducedScreenMargin / 2))
                 .height(Math.round(reducedScreenHeight))
             )
-          )
+            .effect(new ColorizeEffectAction().color("red").level("colorize"))
+        )
       ).position(
         new Position()
-          .gravity(compass(northWest()))
+          .gravity(compass(northEast()))
           .offsetY(reducedMenuBarHeight)
-          .offsetX(
-            Math.round(reducedScreenMargin / 2 + columns * reducedBoxWidth)
-          )
       )
     );
 
@@ -145,15 +143,16 @@ export const getCloudinaryImage = ({
       const offsetX = Math.round(
         reducedScreenMargin / 2 + Math.round(reducedBoxWidth * column)
       );
+
       myImage.overlay(
         source(
-          text("a", new TextStyle("arial", 1))
-            .backgroundColor(rowColor)
-            .transformation(
-              new Transformation().resize(
-                fill().width(reducedBoxWidth).height(reducedBoxHeight)
+          image(`1`).transformation(
+            new Transformation()
+              .resize(fill().width(reducedBoxWidth).height(reducedBoxHeight))
+              .effect(
+                new ColorizeEffectAction().color(rowColor).level("colorize")
               )
-            )
+          )
         ).position(
           new Position()
             .gravity(compass(northWest()))

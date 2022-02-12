@@ -1,16 +1,19 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import DropDown from "~/components/DropDown";
 import Data from "~/components/Data";
 import { AdvancedImage, placeholder } from "@cloudinary/react";
 import { getCloudinaryImage } from "~/utilities/cloudinary";
+import { useLocalStorage } from "usehooks-ts";
 
 export default function Index() {
-  const [menuBarHeight, setMenuBarHeight] = useState(24);
-  const [width, setWidth] = useState(3840);
-  const [height, setHeight] = useState(2160);
-
-  const [rows, setRows] = useState(2);
-  const [columns, setColumns] = useState(2);
+  const [menuBarHeight, setMenuBarHeight] = useLocalStorage(
+    "menuBarHeight",
+    24
+  );
+  const [width, setWidth] = useLocalStorage("width", 3840);
+  const [height, setHeight] = useLocalStorage("height", 2160);
+  const [rows, setRows] = useLocalStorage("rows", 2);
+  const [columns, setColumns] = useLocalStorage("columns", 2);
 
   const getScreenHeight = () => {
     return height - menuBarHeight;
@@ -42,8 +45,29 @@ export default function Index() {
       getBoxSize,
       rows,
       columns,
-    }).toURL();
+    })
+      .format("jpg")
+      .quality("80")
+      .toURL();
     window.open(url, "__blank");
+  };
+
+  const setSizes = (m: number, w: number, h: number) => {
+    setMenuBarHeight(m);
+    setWidth(w);
+    setHeight(h);
+  };
+
+  const getShrink = () => {
+    if (width <= 1920) {
+      return 1;
+    } else if (width <= 2048) {
+      return 2;
+    } else if (width <= 3840) {
+      return 4;
+    } else {
+      return 10;
+    }
   };
 
   return (
@@ -52,6 +76,43 @@ export default function Index() {
         <div className="flex">
           <div className="w-full max-w-xl">
             <form className="px-8 pt-6 pb-8 mb-4 bg-white rounded shadow-md">
+              <div className="flex items-center justify-between">
+                <button
+                  className="px-4 py-2 font-bold text-white bg-blue-500 rounded hover:bg-blue-700 focus:outline-none focus:shadow-outline"
+                  type="button"
+                  onClick={() => setSizes(24, 3840, 2160)}
+                >
+                  4K
+                </button>
+                <button
+                  className="px-4 py-2 font-bold text-white bg-blue-500 rounded hover:bg-blue-700 focus:outline-none focus:shadow-outline"
+                  type="button"
+                  onClick={() => setSizes(16, 3008, 1692)}
+                >
+                  3008x1692
+                </button>
+                <button
+                  className="px-4 py-2 font-bold text-white bg-purple-500 rounded hover:bg-purple-700 focus:outline-none focus:shadow-outline"
+                  type="button"
+                  onClick={() => setSizes(19, 2560, 1440)}
+                >
+                  2560x1440
+                </button>
+                <button
+                  className="px-4 py-2 font-bold text-white bg-purple-500 rounded hover:bg-purple-700 focus:outline-none focus:shadow-outline"
+                  type="button"
+                  onClick={() => setSizes(24, 1920, 1080)}
+                >
+                  HD
+                </button>
+                <button
+                  className="px-4 py-2 font-bold text-white bg-purple-500 rounded hover:bg-purple-700 focus:outline-none focus:shadow-outline"
+                  type="button"
+                  onClick={() => setSizes(24, 1504, 846)}
+                >
+                  1504x846
+                </button>
+              </div>
               <div className="mb-4">
                 <label
                   className="block mb-2 text-sm font-bold text-gray-700"
@@ -125,6 +186,9 @@ export default function Index() {
                   <DropDown value={columns} func={setColumns} id="columns" />
                 </div>
               </div>
+              <div className="flex flex-col text-xs text-left">
+                <p className="text-gray-500 ">* Due to URL limits 8x8 is max</p>
+              </div>
               <Data
                 menuBarHeight={menuBarHeight}
                 width={width}
@@ -183,7 +247,7 @@ export default function Index() {
                     getBoxSize,
                     rows,
                     columns,
-                    shrink: 10,
+                    shrink: getShrink(),
                   })}
                   plugins={[placeholder({ mode: "blur" })]}
                 />
