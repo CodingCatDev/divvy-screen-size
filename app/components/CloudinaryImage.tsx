@@ -62,7 +62,6 @@ const CloudinaryImage = ({
   // Apply the transformation.
   myImage
     // Crop the image.
-    .resize(fill().width(width).height(height))
     .overlay(
       source(
         text("Menu Bar", new TextStyle("arial", 3))
@@ -115,6 +114,7 @@ const CloudinaryImage = ({
 
   for (let row = 0; row < rows; row++) {
     for (let column = 0; column < columns; column++) {
+      var randomColor = Math.floor(Math.random() * 16777215).toString(16);
       const offsetY = Math.round(menuBarHeight + Math.round(boxHeight * row));
       const offsetX = Math.round(
         screenMargin / 2 + Math.round(boxWidth * column)
@@ -123,7 +123,7 @@ const CloudinaryImage = ({
         source(
           text("Box 1", new TextStyle("arial", 3))
             .textColor("white")
-            .backgroundColor("#DCDCDC")
+            .backgroundColor(`#${randomColor}`)
             .transformation(
               new Transformation().resize(
                 fill().width(boxWidth).height(boxHeight)
@@ -141,7 +141,13 @@ const CloudinaryImage = ({
 
   // Render the transformed image in a React component.
   return (
-    <a href={myImage.format("png").toURL()} target="_blank">
+    <a
+      href={myImage
+        .resize(fill().width(width).height(height))
+        .format("png")
+        .toURL()}
+      target="_blank"
+    >
       {height && width && menuBarHeight && (
         <AdvancedImage
           cldImg={myImage}
