@@ -46,8 +46,7 @@ export default function Index() {
       rows,
       columns,
     })
-      .format("jpg")
-      .quality("80")
+      .format("png")
       .toURL();
     window.open(url, "__blank");
   };
@@ -87,14 +86,14 @@ export default function Index() {
                 <button
                   className="px-4 py-2 font-bold text-white bg-blue-500 rounded hover:bg-blue-700 focus:outline-none focus:shadow-outline"
                   type="button"
-                  onClick={() => setSizes(16, 3008, 1692)}
+                  onClick={() => setSizes(16, 2048, 1152)}
                 >
                   3008x1692
                 </button>
                 <button
                   className="px-4 py-2 font-bold text-white bg-purple-500 rounded hover:bg-purple-700 focus:outline-none focus:shadow-outline"
                   type="button"
-                  onClick={() => setSizes(19, 2560, 1440)}
+                  onClick={() => setSizes(19, 2048, 1152)}
                 >
                   2560x1440
                 </button>
