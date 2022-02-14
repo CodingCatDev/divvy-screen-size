@@ -1,4 +1,4 @@
-import styles from "./styles/app.css"
+import styles from "./styles/app.css";
 
 import {
   Links,
@@ -6,16 +6,16 @@ import {
   Meta,
   Outlet,
   Scripts,
-  ScrollRestoration
+  ScrollRestoration,
 } from "remix";
 import type { MetaFunction } from "remix";
 
 export const meta: MetaFunction = () => {
-  return { title: "New Remix App" };
+  return { title: "CodingCat.dev - Divvy" };
 };
 
 export function links() {
-  return [{ rel: "stylesheet", href: styles }]
+  return [{ rel: "stylesheet", href: styles }];
 }
 
 export default function App() {
